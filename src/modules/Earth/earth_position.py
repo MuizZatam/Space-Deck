@@ -52,7 +52,8 @@ def compute_position():
     print(f"State Vector: {earth_state_wrt_sun}")
     # Light Time is the time taken by Light to reach Earth from Sun
     print(f"Light Time: {earth_sun_light_time}")
-    print(f"Light Time in Minutes: {earth_sun_light_time / 60.0}")
+    light_time_in_minutes = earth_sun_light_time / 60.0
+    print(f"Light Time in Minutes: {light_time_in_minutes}")
 
     # Calculating Euclidean distance from Co-Ords
     earth_sun_distance = math.sqrt(
@@ -67,6 +68,8 @@ def compute_position():
     distance_in_au = spiceypy.convrt(earth_sun_distance, "km", "au")
 
     print(f"Distance in AU: {distance_in_au}")
+
+    return earth_state_wrt_sun, earth_sun_distance, distance_in_au, earth_sun_light_time, earth_sun_light_time
 
 
 if __name__ == "__main__":
