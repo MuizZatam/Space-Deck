@@ -6,9 +6,6 @@ from flask import (
 import modules
 import datetime
 
-import modules.Earth
-import modules.Earth.earth_computes
-
 app = Flask(__name__)
 
 
