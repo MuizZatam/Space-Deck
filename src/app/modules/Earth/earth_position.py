@@ -2,7 +2,7 @@
 import spiceypy
 import datetime
 import math
-
+import numpy as np
 
 # The main function
 def main():
@@ -42,10 +42,10 @@ def compute_position():
     # Computing state of Earth
     earth_state_wrt_sun, earth_sun_light_time = spiceypy.spkgeo(
 
-        targ = 399,
+        targ = 399, # Setting the Target to Earth
         et = ephimeris_date_time,
         ref = "ECLIPJ2000", # Plane of reference with respect to Earth
-        obs = 10 
+        obs = 10 # As observed from Sun
     )
 
     # State vector returns the x, y, z position of Earth with respect to Sun
@@ -69,13 +69,79 @@ def compute_position():
 
     print(f"Distance in AU: {distance_in_au}")
 
+
+    # This section is all about computing Earth's Orbital and Tangential velocity
+
+    # Converting to np array for faster calculations
+    earth_state_wrt_sun = np.array(earth_state_wrt_sun)
+
+    # Using the state vector to compute distance by normalizing the x, y and z coords
+    # earth_sun_distance = math.sqrt(
+    #     earth_state_wrt_sun[0] ** 2.0 
+    #     + earth_state_wrt_sun[1] ** 2.0
+    #     + earth_state_wrt_sun[2] ** 2.0
+    # )
+    # Essentially performig euclidean distance calculation but through np protocol
+    earth_sun_distance = np.linalg.norm(earth_state_wrt_sun[:3])
+
+    print(f"Earth through Sun distance calculated through np: {earth_sun_distance}")
+
+    # Calculation of orbital velocity (Km/s)
+    orbital_velocity = np.linalg.norm(earth_state_wrt_sun[3:])
+
+    print(f"Orbital Velocity: {orbital_velocity}")
+
+
+    # Loading the gm_de431.tpc kernel required for calculating the
+    # Physical parameters of Bodies.
+    # Here, it is used to calculate Gravitation x Mass of the Sun
+    spiceypy.furnsh("./kernels/pck/gm_de431.tpc")
+    _, GM_SUN = spiceypy.bodvcd(bodyid=10, item="GM", maxn=1)
+
+    # The velocity calculated on line 90 (orbital_velocity = np.linalg.norm(earth_state_wrt_sun[3:]))
+    # can be verified through the mathematical equation: orbital_velocity = (GM/R) ^ 1/2
+    verify_orbital_velocity = lambda gm, r: np.sqrt(gm/r)
+
+    # To verify the orbital velocity:
+    print(f"Verified Orbital Velocity: {verify_orbital_velocity(GM_SUN[0], earth_sun_distance)} Km/s")
+
+    # This section allows us to compute the angular distance that has been covered by Earth
+    # Since Vernal Equinox
+
+    # The vernal equinox, also known as the spring equinox, marks the beginning of spring 
+    # in the Northern Hemisphere and occurs when the Sun crosses the celestial equator 
+    # moving northward, making day and night approximately equal in length
+    # On this day, the state vector if normalized, represents (x, y, z) as (1, 0, 0)
+    earth_position_wrt_sun = earth_state_wrt_sun[:3]
+
+    # Normalizing the co-ordinate distances
+    earth_state_wrt_sun_normalized = earth_position_wrt_sun / earth_sun_distance
+    
+    # Actual normalized state vector on Vernal Equinox
+    earth_state_wrt_sun_normed_autumn = [1.0, 0.0, 0.0]
+
+    # Calculating the Angular Distance
+    # The angular distance of Earth is dot of normalized Earth Vector (Today) with Vernal Equinox state
+    angular_distance = np.degrees(
+        np.arccos(np.dot(
+            earth_state_wrt_sun_normalized, earth_state_wrt_sun_normed_autumn
+        ))
+    )
+
+    print(f"Angular distance since Vernal Equinox: {angular_distance}degrees")
+
     return {
         "state": earth_state_wrt_sun, 
-        "distance" : earth_sun_distance,
-        "distance_au": distance_in_au,
-        "light_time": earth_sun_light_time, 
-        "light_time_minutes": light_time_in_minutes
+        "distance" : round(earth_sun_distance, ndigits=3),
+        "distance_au": round(distance_in_au, ndigits=3),
+        "light_time": round(earth_sun_light_time, ndigits=3), 
+        "light_time_minutes": round(light_time_in_minutes, ndigits=3),
+        "orbital_velocity": round(orbital_velocity, ndigits=3),
+        "angular_distance": round(angular_distance, ndigits=3)
     }
+
+    # Note: I am not returning the verified values as they are not
+    # required to be showcased for the deck
 
 
 if __name__ == "__main__":
