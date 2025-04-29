@@ -1,0 +1,13 @@
+blinker==1.9.0
+click==8.1.8
+Flask==3.1.0
+itsdangerous==2.2.0
+Jinja2==3.1.6
+MarkupSafe==3.0.2
+narwhals==1.35.0
+numpy==2.2.5
+packaging==25.0
+plotly==6.0.1
+spiceypy==6.0.0
+tzlocal==5.3.1
+Werkzeug==3.1.3
