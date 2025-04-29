@@ -1,13 +1,13 @@
-import modules
 from flask import (
     
     Flask,
     render_template
 )
+import modules
+import datetime
 
 import modules.Earth
-import modules.Earth.earth_position
-import datetime
+import modules.Earth.earth_computes
 
 app = Flask(__name__)
 
@@ -26,7 +26,7 @@ def index():
 
 def get_data_earth():
 
-    return modules.Earth.earth_position.compute_position()
+    return modules.Earth.earth_computes.computes()
 
 
 if __name__ == "__main__":

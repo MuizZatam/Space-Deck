@@ -7,10 +7,10 @@ import numpy as np
 # The main function
 def main():
 
-    compute_position()
+    computes()
     
 
-def compute_position():
+def computes():
 
     # Constructing a datetime object that returns the current date.
     current_date_time = datetime.datetime.today()
