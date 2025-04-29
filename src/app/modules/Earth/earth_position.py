@@ -69,7 +69,13 @@ def compute_position():
 
     print(f"Distance in AU: {distance_in_au}")
 
-    return earth_state_wrt_sun, earth_sun_distance, distance_in_au, earth_sun_light_time, earth_sun_light_time
+    return {
+        "state": earth_state_wrt_sun, 
+        "distance" : earth_sun_distance,
+        "distance_au": distance_in_au,
+        "light_time": earth_sun_light_time, 
+        "light_time_minutes": light_time_in_minutes
+    }
 
 
 if __name__ == "__main__":
