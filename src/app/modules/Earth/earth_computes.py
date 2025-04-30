@@ -3,6 +3,13 @@ import spiceypy
 import datetime
 import math
 import numpy as np
+import os
+
+kernel_path = os.path.abspath("/kernel_meta.txt")
+
+spiceypy.furnsh(kernel_path)
+
+# Loading all required kernels at once
 
 # The main function
 def main():
@@ -31,9 +38,9 @@ def computes():
     # the 1st of Jan
 
 
-    # Loading Kernels (ref. notes/kernels.md)
-    spiceypy.furnsh("./kernels/lsk/naif0012.tls")
-    spiceypy.furnsh("./kernels/spk/de432s.bsp")
+    # This commit removed the use of furnsh multiple times. 
+    # Kernel loading is now handled by kernel_meta.txt
+    # This file loads up all the kernels specified during the runtime of spice
 
     # Converting to Ephimeris Timestamp
     ephimeris_date_time = spiceypy.utc2et(current_date_time)
@@ -92,10 +99,8 @@ def computes():
     print(f"Orbital Velocity: {orbital_velocity}")
 
 
-    # Loading the gm_de431.tpc kernel required for calculating the
-    # Physical parameters of Bodies.
+    # gm_de431 kernel is now loaded by kernel_meta
     # Here, it is used to calculate Gravitation x Mass of the Sun
-    spiceypy.furnsh("./kernels/pck/gm_de431.tpc")
     _, GM_SUN = spiceypy.bodvcd(bodyid=10, item="GM", maxn=1)
 
     # The velocity calculated on line 90 (orbital_velocity = np.linalg.norm(earth_state_wrt_sun[3:]))

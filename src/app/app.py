@@ -3,7 +3,7 @@ from flask import (
     Flask,
     render_template
 )
-import modules
+from modules.Earth.earth_computes import computes
 import datetime
 
 app = Flask(__name__)
@@ -23,7 +23,7 @@ def index():
 
 def get_data_earth():
 
-    return modules.Earth.earth_computes.computes()
+    return computes()
 
 
 if __name__ == "__main__":
